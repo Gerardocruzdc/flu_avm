@@ -19,7 +19,7 @@ final appMenuItems = <MenuItem>[
   MenuItem(
     titulus: 'Contador',
     subtitulus: 'Introduccion a Riverpod',
-    link: '/numerator_river',
+    link: '/numerator-river',
     icon: Icons.add
   ),
   MenuItem(
