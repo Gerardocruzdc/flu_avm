@@ -22,7 +22,7 @@ class MyApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flu_avm',
       routerConfig: appRouter,
-      theme:AppTheme(tenebrisModusEst: estTenebrisModus, electusColor: Colors.pink.shade900).getTheme(),
+      theme:AppTheme(tenebrisModusEst: estTenebrisModus).getTheme(),
     );
   }
 }

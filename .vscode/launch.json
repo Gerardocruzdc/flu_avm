@@ -1,0 +1,57 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Chrome",
+      "program": "lib/main.dart",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "debug",
+      "deviceId": "chrome"
+    },
+    // {
+    //   "name": "macOS",
+    //   "program": "lib/main.dart",
+    //   "request": "launch",
+    //   "type": "dart",
+    //   "flutterMode": "debug",
+    //   "deviceId": "macos"
+    // },
+    // {
+    //   "name": "iOS",
+    //   "program": "lib/main.dart",
+    //   "request": "launch",
+    //   "type": "dart",
+    //   "flutterMode": "debug",
+    //   "deviceId": "7777CC2C-C7E7-4266-8E7E-C42E6FF66E1E"
+    // },
+    {
+      "name": "Android (emulador)",
+      "program": "lib/main.dart",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "debug",
+      "deviceId": "emulator-5554"
+    },
+    {
+      "name": "Xiaomi",
+      "program": "lib/main.dart",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "debug",
+      "deviceId": "77529a03"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Todos los dispositivos",
+      "configurations": [
+        "Chrome",
+        // "macOS",
+        // "iOS"
+        "Android (emulador)",
+        "Xiaomi",
+      ]
+    }
+  ]
+}

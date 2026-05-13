@@ -12,7 +12,7 @@ class AppTheme {
       colorSchemeSeed: electusColor,
       brightness: tenebrisModusEst ? Brightness.dark : Brightness.light,
       appBarTheme: AppBarTheme(
-        backgroundColor: tenebrisModusEst ? electusColor : electusColor.withAlpha(00),
+        backgroundColor: tenebrisModusEst ? electusColor : electusColor.withAlpha(20),
         centerTitle: false,
       )
     );

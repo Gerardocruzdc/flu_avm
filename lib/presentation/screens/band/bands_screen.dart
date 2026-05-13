@@ -14,9 +14,20 @@ class BandsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bandsState = ref.watch(bandsProvider);
+
+    final serverStatus = bandsState.serverStatus;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Bandas'),
+        actions: [
+          Container(
+            margin: EdgeInsets.only(right: 10),
+            child: (serverStatus == ServerStatus.Online) 
+              ? Icon(Icons.check_circle, color: Colors.blue[300],)
+              : Icon(Icons.offline_bolt, color: Colors.red[600],),
+          )
+        ],
       ),
       
       body: Column(
