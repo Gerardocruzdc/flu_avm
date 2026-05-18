@@ -8,7 +8,7 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  MapboxOptions.setAccessToken('pk.eyJ1IjoiZ2VyYTMzMyIsImEiOiJjbXBiNWM2ajcwMHg1MnlxdzJoNHUxb21oIn0.T3IhkW9ZPJf0iRoLq7aAEQ');
+  MapboxOptions.setAccessToken('mapboxAccessToken');
 
 
   runApp(
