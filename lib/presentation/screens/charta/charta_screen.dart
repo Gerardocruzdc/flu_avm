@@ -15,13 +15,33 @@ class _ChartaScreenState extends ConsumerState<ChartaScreen> {
 
   CircleAnnotationManager? _circleAnnotationManager;
 
+  Cancelable? _dragCancelable;
+
   void _initializeCircleAnnotations(MapboxMap mapboxMap) {
 
     mapboxMap.annotations.createCircleAnnotationManager().then((manager) {
       _circleAnnotationManager = manager;
+      _setupDragListener(manager);
       _addeVelRenovareMarker();
     });
     // Aquí puedes agregar cualquier configuración adicional para el mapa si es necesario
+  }
+
+  void _setupDragListener(CircleAnnotationManager manager) {
+
+    _dragCancelable?.cancel();
+    _dragCancelable = manager.dragEvents(
+
+      onChanged: (CircleAnnotation annotation){
+        final pos = annotation.geometry.coordinates;
+        ref.read(coordsMarkerProvider.notifier).state = pos;
+
+      },
+      onEnd: (CircleAnnotation annotation){
+        final pos = annotation.geometry.coordinates;
+        ref.read(coordsMarkerProvider.notifier).state = pos;
+      }    );
+
   }
 
   Future<void> _addeVelRenovareMarker() async {
@@ -34,7 +54,7 @@ class _ChartaScreenState extends ConsumerState<ChartaScreen> {
       return;
     } // Evitar agregar el marcador si ya está colocado 
 
-    final situs = Position(-122.467895, 37.800126);
+    final situs = ref.read(coordsMarkerProvider);
     final color = ref.read(formColorProvider);
     
     final optiones = CircleAnnotationOptions(
@@ -51,6 +71,12 @@ class _ChartaScreenState extends ConsumerState<ChartaScreen> {
       } catch (e) {
         debugPrint('Error al agregar el marcador: $e ');
       }// Coordenadas de ejemplo
+  }
+
+  @override
+  void dispose() {
+    _dragCancelable?.cancel();
+    super.dispose();
   }
 
   @override
@@ -73,10 +99,10 @@ class _ChartaScreenState extends ConsumerState<ChartaScreen> {
         children: [
             MapWidget(
 
-              key: const ValueKey('main_map'),
+              key:  ValueKey('main_map'),
               cameraOptions: CameraOptions(
                 center: Point(
-                  coordinates: Position(-122.467895, 37.800126),
+                  coordinates: initialisMarkerPositio,
                 ),
                 zoom: 14.5,
               ),
@@ -86,11 +112,16 @@ class _ChartaScreenState extends ConsumerState<ChartaScreen> {
               },
             ),
           
-          const Align(
+          Align(
             alignment: Alignment.topRight,
             child: Padding(
               padding: EdgeInsets.all(12),
-              child: ComplereForm()
+              child: ref.watch(markerPositumProvider) ? InformaUsoris(
+                nomen: ref.watch(formNomenProvider),
+                positio: ref.watch(coordsMarkerProvider), // Coordenadas de ejemplo
+                color: ref.watch(formColorProvider) 
+              ) : ComplereForm(),
+              
             )
           )
         ],
