@@ -121,6 +121,18 @@ class ComplereForm extends ConsumerWidget {
 
     if (nameValue.isEmpty) return;
 
+    final socketService = ref.read(socketServiceProvider);
+
+    socketService.conectare();
+
+    socketService.mittereUsor(
+      nomen: nameValue, 
+      colorHex: colorValue, 
+      positio: ref.read(coordsMarkerProvider)
+      
+      );
+      
+
     ref.read(markerPositumProvider.notifier).state = true; // Marcar que el marcador está colocado
 
     // ignore: avoid_print

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
+import '../../config/config.dart';
 import '../../services/charta_service.dart';
 
 
@@ -23,4 +24,11 @@ final socketServiceProvider = Provider<ChartaService>((ref){
   ref.onDispose(service.finire);
 
   return service;
+});
+
+
+final aliiUsoresProvider = StreamProvider<List<Usor>>((ref) {
+
+  final service = ref.watch(socketServiceProvider);
+  return service.usoresStream;
 });
