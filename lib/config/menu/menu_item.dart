@@ -34,6 +34,14 @@ final appMenuItems = <MenuItem>[
     subtitulus: 'Localizacion de usuarios',
     link: '/charta',
     icon: Icons.map_outlined
+  ),
+
+  MenuItem (
+    titulus: 'PokeApi',
+    subtitulus: 'Peticiones http a una Api',
+    link: '/request',
+    icon: Icons.catching_pokemon
   )
+
 
 ];
