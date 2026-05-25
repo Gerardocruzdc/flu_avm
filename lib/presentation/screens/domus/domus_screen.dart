@@ -10,7 +10,9 @@ class DomusScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
     final bool estTenebrisModus = ref.watch(estTenebrisModusProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Flu Avm App'),
@@ -23,7 +25,13 @@ class DomusScreen extends ConsumerWidget {
           )
         ],
       ),
-      body:  _DomusView(),
+      body:  Column(
+        children: [
+          Image.asset('assets/images/valencia.jpg', width: double.infinity, fit: BoxFit.contain),
+          Expanded(
+            child: _DomusView()),
+        ],
+      ),
     );
   }
 }
