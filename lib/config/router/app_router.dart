@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/screens/screens.dart';
 
@@ -37,6 +36,10 @@ final appRouter = GoRouter(
           },
         ),
       ],
+    ),
+    GoRoute(
+      path: '/asistencias',
+      builder: (context, state) => const AsistenciasScreen(),
     ),
   ],
 );

@@ -41,7 +41,13 @@ final appMenuItems = <MenuItem>[
     subtitulus: 'Peticiones http a una Api',
     link: '/request',
     icon: Icons.catching_pokemon
-  )
+  ),
+  MenuItem (
+    titulus: 'Asistencias',
+    subtitulus: 'Lista de asistencias',
+    link: '/asistencias',
+    icon: Icons.people_alt_outlined
+  ),
 ];
 
 final wsServices = <String>[
