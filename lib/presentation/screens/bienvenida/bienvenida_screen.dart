@@ -24,7 +24,7 @@ class BienvenidaScreen extends ConsumerWidget {
                     .update((state) => !esTenebris),
               ),
               const Spacer(),
-              const _SeccionImagenesWS(),
+              _SeccionImagenesWS(esTenebris: esTenebris),
               const Spacer(),
               const _SeccionTexto(),
               const Spacer(),
@@ -49,16 +49,21 @@ class _Cabecera extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorum = Theme.of(context).colorScheme;
     return Row(
       children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            border: Border.all(color: colorum.primary),
-            borderRadius: BorderRadius.circular(8),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: ColorFiltered(
+            colorFilter: esTenebris
+                ? const ColorFilter.mode(Colors.transparent, BlendMode.multiply)
+                : const ColorFilter.mode(Colors.black, BlendMode.srcIn),
+            child: Image.asset(
+              'assets/icon/icon.png',
+              height: 36,
+              width: 36,
+              fit: BoxFit.cover,
+            ),
           ),
-          child: Icon(Icons.data_object, color: colorum.primary),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -82,7 +87,9 @@ class _Cabecera extends StatelessWidget {
 }
 
 class _SeccionImagenesWS extends StatelessWidget {
-  const _SeccionImagenesWS();
+  final bool esTenebris;
+
+  const _SeccionImagenesWS({required this.esTenebris});
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +123,7 @@ class _SeccionImagenesWS extends StatelessWidget {
               Expanded(
                 flex: 3,
                 child: Image.asset(
-                  'assets/images/movil.png',
+                  esTenebris ? 'assets/images/mobil_nocturno.png' : 'assets/images/movil.png',
                   height: 60,
                   fit: BoxFit.contain,
                 ),
@@ -124,7 +131,7 @@ class _SeccionImagenesWS extends StatelessWidget {
               Expanded(
                 flex: 5,
                 child: Image.asset(
-                  'assets/images/puntos.png',
+                  esTenebris ? 'assets/images/puntos_nocturno.png' : 'assets/images/puntos.png',
                   height: 25,
                   fit: BoxFit.fill,
                 ),
@@ -132,7 +139,7 @@ class _SeccionImagenesWS extends StatelessWidget {
               Expanded(
                 flex: 3,
                 child: Image.asset(
-                  'assets/images/servidor.png',
+                  esTenebris ? 'assets/images/servidor_nocturno.png' : 'assets/images/servidor.png',
                   height: 60,
                   fit: BoxFit.contain,
                 ),
