@@ -42,6 +42,9 @@ final appMenuItems = <MenuItem>[
     link: '/request',
     icon: Icons.catching_pokemon
   )
+];
 
-
+final wsServices = <String>[
+  'Mapa — ubicaciones en tiempo real',
+  'Bandas — votaciones en tiempo real',
 ];

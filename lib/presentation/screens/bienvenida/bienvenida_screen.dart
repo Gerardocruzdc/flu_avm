@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../config/config.dart';
 import '../../providers/providers.dart';
 
 class BienvenidaScreen extends ConsumerWidget {
@@ -282,9 +283,9 @@ class _SeccionStats extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: _StatChip(numero: '0', etiqueta: 'PANTALLAS')),
+        Expanded(child: _StatChip(numero: '${appMenuItems.length}', etiqueta: 'PANTALLAS')),
         const SizedBox(width: 8),
-        Expanded(child: _StatChip(numero: '0', etiqueta: 'WEBSOCKETS')),
+        Expanded(child: _StatChip(numero: '${wsServices.length}', etiqueta: 'WEBSOCKETS')),
         const SizedBox(width: 8),
         Expanded(child: _StatChip(numero: 'GC', etiqueta: 'GERARDO CRUZ')),
       ],
