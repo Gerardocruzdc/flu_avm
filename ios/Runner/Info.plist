@@ -66,5 +66,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Se necesita tu ubicación para registrar dónde iniciaste el turno.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Se necesita tu ubicación para registrar dónde iniciaste el turno.</string>
 </dict>
 </plist>

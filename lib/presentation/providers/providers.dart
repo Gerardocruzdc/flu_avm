@@ -3,3 +3,4 @@ export './modus_provider.dart';
 export './bands_provider.dart';
 export './charta_provider.dart';
 export './pokemon_provider.dart';
+export './asistencias_provider.dart';
