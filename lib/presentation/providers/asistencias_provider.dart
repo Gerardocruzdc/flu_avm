@@ -20,6 +20,17 @@ class TurnosState {
 
   Set<int> get diasConTurno => turnos.map((t) => t.diaSemana).toSet();
 
+  Duration get horasSemanales {
+    final ahora = DateTime.now();
+    final inicioSemana = DateTime(
+        ahora.year, ahora.month, ahora.day - (ahora.weekday - 1));
+    final finSemana = inicioSemana.add(const Duration(days: 7));
+    return turnos
+        .where((t) =>
+            !t.inicio.isBefore(inicioSemana) && t.inicio.isBefore(finSemana))
+        .fold(Duration.zero, (acc, t) => acc + t.duracion);
+  }
+
   TurnosState copyWith({
     bool? isWorking,
     DateTime? startTime,

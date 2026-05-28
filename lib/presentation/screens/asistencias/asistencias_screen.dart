@@ -75,6 +75,17 @@ class _AsistenciasScreenState extends ConsumerState<AsistenciasScreen> {
     }
   }
 
+  void _showDiaSheet(BuildContext context, int weekday, List<Turno> turnos) {
+    final turnosDia = turnos.where((t) => t.diaSemana == weekday).toList();
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) =>
+          _DiaTurnosSheet(weekday: weekday, turnos: turnosDia),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(turnosProvider);
@@ -84,7 +95,14 @@ class _AsistenciasScreenState extends ConsumerState<AsistenciasScreen> {
       appBar: AppBar(title: const Text('Asistencias')),
       body: Column(
         children: [
-          _SemanaWidget(diasConTurno: state.diasConTurno),
+          _ResumenSemanalWidget(
+            horasSemanales: state.horasSemanales +
+                (state.isWorking ? _elapsed : Duration.zero),
+          ),
+          _SemanaWidget(
+            diasConTurno: state.diasConTurno,
+            onTap: (wd) => _showDiaSheet(context, wd, state.turnos),
+          ),
           const Divider(height: 1),
           Expanded(
             child: state.isWorking == false && state.turnos.isEmpty
@@ -145,6 +163,58 @@ class _AsistenciasScreenState extends ConsumerState<AsistenciasScreen> {
   }
 }
 
+// ─── Resumen semanal ──────────────────────────────────────────────────────────
+
+class _ResumenSemanalWidget extends StatelessWidget {
+  final Duration horasSemanales;
+
+  const _ResumenSemanalWidget({required this.horasSemanales});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorum = Theme.of(context).colorScheme;
+    final h = horasSemanales.inHours;
+    final m = (horasSemanales.inMinutes % 60).toString().padLeft(2, '0');
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 12, 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Horas esta semana',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: colorum.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${h}h ${m}m',
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: colorum.onSurface,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton.filledTonal(
+            onPressed: () {},
+            iconSize: 26,
+            icon: const Icon(Icons.grid_view_rounded),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ─── Semana ──────────────────────────────────────────────────────────────────
 
 const _diasSemana = [
@@ -157,10 +227,15 @@ const _diasSemana = [
   (7, 'D'),
 ];
 
+const _nombresDia = [
+  'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'
+];
+
 class _SemanaWidget extends StatelessWidget {
   final Set<int> diasConTurno;
+  final void Function(int weekday)? onTap;
 
-  const _SemanaWidget({required this.diasConTurno});
+  const _SemanaWidget({required this.diasConTurno, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -177,36 +252,109 @@ class _SemanaWidget extends StatelessWidget {
           final completado = diasConTurno.contains(weekday);
           final esHoy = weekday == hoy;
 
-          return Column(
-            children: [
-              Text(
-                letra,
-                style: TextStyle(
-                  fontWeight: esHoy ? FontWeight.bold : FontWeight.normal,
-                  color: esHoy ? colorum.primary : colorum.onSurface,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(height: 6),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: completado ? colorum.primary : Colors.transparent,
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(
-                    color: esHoy ? colorum.primary : colorum.outlineVariant,
-                    width: esHoy ? 2 : 1,
+          return InkWell(
+            onTap: () => onTap?.call(weekday),
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: Column(
+                children: [
+                  Text(
+                    letra,
+                    style: TextStyle(
+                      fontWeight: esHoy ? FontWeight.bold : FontWeight.normal,
+                      color: esHoy ? colorum.primary : colorum.onSurface,
+                      fontSize: 13,
+                    ),
                   ),
-                ),
-                child: completado
-                    ? Icon(Icons.check, size: 16, color: colorum.onPrimary)
-                    : null,
+                  const SizedBox(height: 6),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: completado ? colorum.primary : Colors.transparent,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: esHoy ? colorum.primary : colorum.outlineVariant,
+                        width: esHoy ? 2 : 1,
+                      ),
+                    ),
+                    child: completado
+                        ? Icon(Icons.check, size: 16, color: colorum.onPrimary)
+                        : null,
+                  ),
+                ],
               ),
-            ],
+            ),
           );
         }).toList(),
+      ),
+    );
+  }
+}
+
+// ─── Bottom sheet día ─────────────────────────────────────────────────────────
+
+class _DiaTurnosSheet extends StatelessWidget {
+  final int weekday;
+  final List<Turno> turnos;
+
+  const _DiaTurnosSheet({required this.weekday, required this.turnos});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorum = Theme.of(context).colorScheme;
+    final total = turnos.fold(Duration.zero, (acc, t) => acc + t.duracion);
+    final h = total.inHours;
+    final m = (total.inMinutes % 60).toString().padLeft(2, '0');
+
+    return DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.5,
+      minChildSize: 0.3,
+      maxChildSize: 0.85,
+      builder: (_, controller) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _nombresDia[weekday - 1],
+                  style: const TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  turnos.isEmpty
+                      ? 'Sin turnos registrados'
+                      : 'Total: ${h}h ${m}m',
+                  style: TextStyle(
+                      color: colorum.onSurfaceVariant, fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          Expanded(
+            child: turnos.isEmpty
+                ? Center(
+                    child: Text(
+                      'No trabajaste este día',
+                      style: TextStyle(color: colorum.onSurfaceVariant),
+                    ),
+                  )
+                : ListView(
+                    controller: controller,
+                    padding: const EdgeInsets.all(16),
+                    children:
+                        turnos.map((t) => _TurnoCompletadoCard(turno: t)).toList(),
+                  ),
+          ),
+        ],
       ),
     );
   }
