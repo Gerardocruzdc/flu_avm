@@ -165,13 +165,15 @@ class _AsistenciasScreenState extends ConsumerState<AsistenciasScreen> {
 
 // ─── Resumen semanal ──────────────────────────────────────────────────────────
 
-class _ResumenSemanalWidget extends StatelessWidget {
+class _ResumenSemanalWidget extends ConsumerWidget {
   final Duration horasSemanales;
 
   const _ResumenSemanalWidget({required this.horasSemanales});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(turnosProvider);
+    final notifier = ref.read(turnosProvider.notifier);
     final colorum = Theme.of(context).colorScheme;
     final h = horasSemanales.inHours;
     final m = (horasSemanales.inMinutes % 60).toString().padLeft(2, '0');
@@ -204,10 +206,74 @@ class _ResumenSemanalWidget extends StatelessWidget {
               ],
             ),
           ),
-          IconButton.filledTonal(
-            onPressed: () {},
-            iconSize: 26,
+          PopupMenuButton<String>(
             icon: const Icon(Icons.grid_view_rounded),
+            style: IconButton.styleFrom(
+              backgroundColor: colorum.secondaryContainer,
+              foregroundColor: colorum.onSecondaryContainer,
+            ),
+            onSelected: (value) async {
+              switch (value) {
+                case 'deshacer':
+                  await notifier.deshacerUltimoTurno();
+                case 'rehacer':
+                  await notifier.rehacerTurno();
+                case 'reset':
+                  final confirmar = await showDialog<bool>(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Resetear semana'),
+                      content: const Text(
+                          '¿Eliminar todos los turnos de esta semana?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancelar'),
+                        ),
+                        FilledButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('Resetear'),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirmar == true) await notifier.resetSemana();
+              }
+            },
+            itemBuilder: (_) => [
+              PopupMenuItem(
+                value: 'deshacer',
+                enabled: state.puedeDeshacer,
+                child: const ListTile(
+                  leading: Icon(Icons.undo_rounded),
+                  title: Text('Deshacer último turno'),
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                ),
+              ),
+              PopupMenuItem(
+                value: 'rehacer',
+                enabled: state.puedeRehacer,
+                child: const ListTile(
+                  leading: Icon(Icons.redo_rounded),
+                  title: Text('Rehacer'),
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                ),
+              ),
+              const PopupMenuDivider(),
+              PopupMenuItem(
+                value: 'reset',
+                child: ListTile(
+                  leading: Icon(Icons.delete_sweep_outlined,
+                      color: Colors.red.shade700),
+                  title: Text('Reset de semana',
+                      style: TextStyle(color: Colors.red.shade700)),
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                ),
+              ),
+            ],
           ),
         ],
       ),

@@ -10,15 +10,20 @@ class TurnosState {
   final DateTime? startTime;
   final String ubicacion;
   final List<Turno> turnos;
+  final Turno? turnoEliminado;
 
   const TurnosState({
     this.isWorking = false,
     this.startTime,
     this.ubicacion = '',
     this.turnos = const [],
+    this.turnoEliminado,
   });
 
   Set<int> get diasConTurno => turnos.map((t) => t.diaSemana).toSet();
+
+  bool get puedeDeshacer => turnos.isNotEmpty && !isWorking;
+  bool get puedeRehacer => turnoEliminado != null;
 
   Duration get horasSemanales {
     final ahora = DateTime.now();
@@ -36,12 +41,17 @@ class TurnosState {
     DateTime? startTime,
     String? ubicacion,
     List<Turno>? turnos,
+    Turno? turnoEliminado,
+    bool clearTurnoEliminado = false,
   }) =>
       TurnosState(
         isWorking: isWorking ?? this.isWorking,
         startTime: startTime ?? this.startTime,
         ubicacion: ubicacion ?? this.ubicacion,
         turnos: turnos ?? this.turnos,
+        turnoEliminado: clearTurnoEliminado
+            ? null
+            : (turnoEliminado ?? this.turnoEliminado),
       );
 }
 
@@ -87,7 +97,39 @@ class TurnosNotifier extends StateNotifier<TurnosState> {
       diaSemana: state.startTime!.weekday,
     );
     final nuevosTurnos = [turno, ...state.turnos];
-    state = TurnosState(turnos: nuevosTurnos);
+    state = TurnosState(turnos: nuevosTurnos, turnoEliminado: null);
+    await _guardar();
+  }
+
+  Future<void> deshacerUltimoTurno() async {
+    if (state.turnos.isEmpty || state.isWorking) return;
+    final eliminado = state.turnos.first;
+    state = TurnosState(
+      turnos: state.turnos.sublist(1),
+      turnoEliminado: eliminado,
+    );
+    await _guardar();
+  }
+
+  Future<void> rehacerTurno() async {
+    if (state.turnoEliminado == null) return;
+    state = TurnosState(
+      turnos: [state.turnoEliminado!, ...state.turnos],
+    );
+    await _guardar();
+  }
+
+  Future<void> resetSemana() async {
+    final ahora = DateTime.now();
+    final inicioSemana = DateTime(
+        ahora.year, ahora.month, ahora.day - (ahora.weekday - 1));
+    final finSemana = inicioSemana.add(const Duration(days: 7));
+    final restantes = state.turnos
+        .where((t) =>
+            t.inicio.isBefore(inicioSemana) ||
+            !t.inicio.isBefore(finSemana))
+        .toList();
+    state = TurnosState(turnos: restantes);
     await _guardar();
   }
 }
